@@ -1,0 +1,262 @@
+* {
+    font-family: Cambria, sans-serif;
+}
+body {
+	background-color: #FCFBD4;
+	height: 100%;
+}
+
+#navbar {
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+}
+
+#navbar a {
+	text-decoration: none;
+}
+
+#header {
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+}
+
+#moneyTable {
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#moneyButton {
+	margin-left: auto;
+	margin-right: auto;
+	display: block;
+	height: 40px;
+	width: 200px;
+	background-color: #D4DAFC;
+	font-size: 16px;
+}
+
+#moneyButtonText {
+	line-height: 40px;
+}
+
+#mPC, #mPAC, #tickLenCell{
+	text-align: center;
+}
+
+/*#tableContainer {
+	overflow: auto;
+	height: 325px;
+}*/
+
+#inventoryTable, #row5{
+	margin-left: auto;
+	margin-right: auto;
+	width: 90%;
+}
+
+#row5 {
+	margin-top: -2px;
+	padding-top: 0px;
+}
+
+#numToBuyContainer{
+	margin-top: 30px;
+	display: block;
+	text-align: center; 
+}
+
+#numToBuy {
+	width: 100px;
+	text-align: center;
+	background-color: #D4DAFC;
+	border-radius: 5px;
+	display: inline-block;
+}
+
+#submitNumToBuy{
+	width: auto;
+	padding: 1px 5px;
+	font-weight: bold;
+}
+
+#submitNumToBuy2{
+	width: auto;
+	padding: 1px 5px;
+	font-weight: bold;
+}
+
+#optionTable{
+	margin: auto;
+}
+
+#wipe, #save, #toggleChart, #exportSave, #importSave{
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 100px;
+	text-align: center;
+	font-size: 30px;
+	width: 200px;
+}
+
+#reset {
+	text-align: center;
+	width: 200px;
+	font-size: 30px;
+	display: inline-block;
+	margin-bottom: 20px;
+}
+
+#statTable, #resetTable{
+	display: inline;
+	margin: auto;
+	float: left;
+}
+
+#chartContainer{
+	float: right;
+	height: 400px;
+	width: 600px;
+}
+
+#chartAxisToggle{
+	float: right;
+	clear: both;
+	text-align: center;
+	margin-top: 10px;
+	padding: 1px 5px;
+	font-weight: bold;
+	width: 150px;
+}
+
+#prestigeTable thead{
+	font-weight: bold;
+}
+
+#prestigeTable tr td{
+	padding-left: 20px;
+	padding-right: 20px;
+}
+
+#bottom{
+	clear: both;
+	font-size: 12px;
+	text-align: center;
+}
+	
+
+/* first line of buttons*/
+
+.button h3 {
+	text-align: center;
+	margin: 0px;
+}
+
+.buttonLit h3 {
+	text-align: center;
+	margin: 0px;
+}
+
+/* second line of buttons */
+
+.button p:nth-child(2) {
+	text-align: center;
+	margin: 0px;
+	font-size: 13px;
+}
+
+.buttonLit p:nth-child(2) {
+	text-align: center;
+	margin: 0px;
+	font-size: 13px;
+}
+
+/* last line of buttons */
+
+.button p:last-child {
+	text-align: center;
+	margin: 0px;
+}
+
+.buttonLit p:last-child {
+	text-align: center;
+	margin: 0px;
+}
+
+/* buttons that aren't lit */
+
+.button, .buttonLit {
+	border: 1px solid black;
+	border-radius: 5px;
+	cursor: pointer;
+	width: 18%;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+}
+
+.button {
+	background-color: #AAAAAA;
+}
+
+/* buttons that are lit */
+
+.buttonLit {
+	background-color: #D4DAFC;
+}
+
+.buttonLit:hover {
+	background-color: #ADBAFF;
+}
+
+/* General classes */
+
+.spacer {
+	width: 1%;
+}
+
+.strong{
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+/* Tab appearance */
+
+/* Centers the tabs */
+#tabs .ui-tabs-nav {
+	text-align: center;
+}
+
+#tabs .ui-tabs-nav li {
+	float: none;
+	display: inline-block;
+}
+
+/* Other appearance stuff */
+#tabs { 
+    background: transparent; 
+    border: none; 
+} 
+#tabs .ui-widget-header { 
+    background: transparent; 
+    border: none; 
+    border-bottom: 1px solid #c0c0c0; 
+    -moz-border-radius: 0px; 
+    -webkit-border-radius: 0px; 
+    border-radius: 0px; 
+} 
+
+#tabs .ui-tabs-nav .ui-state-default { 
+    background: transparent; 
+    border: none; 
+} 
+#tabs .ui-tabs-nav .ui-state-active { 
+    background: transparent no-repeat bottom center; 
+    border: none; 
+} 
+#tabs .ui-tabs-nav .ui-state-default a { 
+    color: #AAAAAA; 
+} 
+#tabs .ui-tabs-nav .ui-state-active a { 
+    color: #000000; 
+}

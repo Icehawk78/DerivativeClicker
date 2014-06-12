@@ -1,6 +1,6 @@
 var enableChart = true;
 
-$(document).ready(function() {
+$(function() {
     Highcharts.setOptions({
         global: {
             useUTC: false

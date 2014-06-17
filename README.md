@@ -7,6 +7,9 @@ Github Pages hosted version of Derivative Clicker
 Changelog
 =========
 
+###Version 0.182 (06/13/2014)
+More number display fixes, buttons use onmousedown events for greater responsiveness
+
 ###Version 0.181 (06/06/2014)
 Bugfixes: global multiplier gets recalculated when save imports, numbers that displayed incorrectly have been fixed, some incorrect prices are changed, updating should be a little more responsive
 

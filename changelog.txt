@@ -1,6 +1,6 @@
 Changelog:
 
-Version 0.182
+Version 0.182 (06/13/2014)
 More number display fixes, buttons use onmousedown events for greater responsiveness
 
 Version 0.181 (06/06/2014)

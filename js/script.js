@@ -61,7 +61,7 @@ var player = {
 	versionNum: versionNum
 };
 
-var versionNum = 0.181;
+var versionNum = 0.182;
 
 //these variables hold constants between plays
 var upgradeCostFactor = [1000, 1000, 1000, 1000, 1000, 1.8, 1];
@@ -114,7 +114,7 @@ function displayNum(num, ifMoney){
 	var suffixes = ["K", "M", "B", "T", "Qa", "Qt", "Sx", "Sp", "Oc", "Nn", "Dc", "UDc", "DDc", "TDc", "QaDc", "QtDc", "SxDc", "SpDc", "ODc", "NDc", "Vi"]
 	
 	for(var i = suffixes.length - 1; i >= 0; i--){
-		if(Math.abs(num) >= Math.pow(10, 3*i + 3) * 0.9999){
+		if(Math.abs(num) >= Math.pow(10, 3*i + 3) * 0.99999){
 			return i < 4 ? parseFloat(num/Math.pow(10, 3*i + 3)).toFixed(2) + suffixes[i] : parseFloat(num/Math.pow(10, 3*i + 3)).toFixed(2) + " " + suffixes[i];
 		}
 	}
@@ -364,7 +364,7 @@ function updateInventory() {
 										deriv2Owned: displayNum(player.buildings[5].owned, false), deriv2Cost: displayNum(player.buildings[5].moneyCost, true), deriv2Manual: displayNum(player.buildings[5].manual, false), deriv2Power: displayNum(Math.round(player.mult[1] * globalMult[1]), false),
 										deriv3Owned: displayNum(player.buildings[10].owned, false), deriv3Cost: displayNum(player.buildings[10].moneyCost, true), deriv3Manual: displayNum(player.buildings[10].manual, false), deriv3Power: displayNum(Math.round(player.mult[2] * globalMult[2]), false),
 										deriv4Owned: displayNum(player.buildings[15].owned, false), deriv4MoneyCost: displayNum(player.buildings[15].moneyCost, true), deriv4WidgetCost: displayNum(player.buildings[15].proofCost, false), deriv4Manual: displayNum(player.buildings[15].manual, false), deriv4Power: displayNum(Math.round(player.mult[3] * globalMult[3]), false),
-										combinatoricsOwned: displayNum(player.buildings[1].owned, false), combinatoricsCost: displayNum(player.buildings[1].moneyCost, true), combinatoricsManual: displayNum(player.buildings[1].manual, false), combinatoricsPower: displayNum(Math.floor(player.mult[0] * globalMult[0]), false),
+										combinatoricsOwned: displayNum(player.buildings[1].owned, false), combinatoricsCost: displayNum(player.buildings[1].moneyCost, true), combinatoricsManual: displayNum(player.buildings[1].manual, false), combinatoricsPower: displayNum(Math.round(player.mult[0] * globalMult[0]), false),
 										numberTheoryOwned: displayNum(player.buildings[6].owned, false), numberTheoryCost: displayNum(player.buildings[6].moneyCost, true), numberTheoryManual: displayNum(player.buildings[6].manual, false), numberTheoryPower: displayNum(Math.round(player.mult[1] * globalMult[1]), false),
 										calculusOwned: displayNum(player.buildings[11].owned, false), calculusCost: displayNum(player.buildings[11].moneyCost, true), calculusManual: displayNum(player.buildings[11].manual, false), calculusPower: displayNum(Math.round(player.mult[2] * globalMult[2]), false),
 										algebraOwned: displayNum(player.buildings[16].owned, false), algebraCost: displayNum(player.buildings[16].moneyCost, true), algebraManual: displayNum(player.buildings[16].manual, false), algebraPower: displayNum(Math.round(player.mult[3] * globalMult[3]), false),
@@ -386,7 +386,7 @@ function updateInventory() {
 										topologyOwned: displayNum(player.buildings[21].owned, false), topologyCost: displayNum(player.buildings[21].moneyCost, true), topologyManual: displayNum(player.buildings[21].manual, false), topologyPower: displayNum(Math.round(player.mult[4] * globalMult[4]), false),
 										designSchoolOwned: displayNum(player.buildings[22].owned, false), designSchoolCost: displayNum(player.buildings[22].proofCost, true), designSchoolManual: displayNum(player.buildings[22].manual, false), designSchoolPower: displayNum(Math.round(3 * player.mult[4] * globalMult[4]), false),
 										researchScientistOwned: displayNum(player.buildings[23].owned, false), researchScientistCost: displayNum(player.buildings[23].moneyCost, true), researchScientistManual: displayNum(player.buildings[23].manual, false), researchScientistPower: displayNum(Math.round(player.mult[4] * globalMult[4]), false),
-										carlGaussOwned: displayNum(player.buildings[24].owned, false), carlGaussCost: displayNum(player.buildings[24].moneyCost, true), carlGaussManual: displayNum(player.buildings[24].manual, false), carlGaussPower: displayNum(Math.floor(player.mult[4] * globalMult[4]), false),
+										carlGaussOwned: displayNum(player.buildings[24].owned, false), carlGaussCost: displayNum(player.buildings[24].moneyCost, true), carlGaussManual: displayNum(player.buildings[24].manual, false), carlGaussPower: displayNum(Math.round(player.mult[4] * globalMult[4]), false),
 										clicksToGain: player.clicksToGain})
 	
 	$("#firstRows").html(firstRows);
@@ -499,6 +499,7 @@ $(document).ready(function(){
 	//resets if the current version is incompatible with the savefile
 	if(typeof player.versionNum == 'undefined' || player.versionNum < 0.18){
 		init();
+		alert("Your save has been wiped as part of an update. Sorry for the inconvenience.\nWipe goes with: version " + versionNum);
 		localStorage.setItem("playerStored", JSON.stringify(player));
 	}
 	else if(player.versionNum < versionNum) player.versionNum = versionNum;

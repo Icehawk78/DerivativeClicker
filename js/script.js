@@ -497,9 +497,9 @@ $(document).ready(function(){
 	if(player.upgrades[1] == 24) player.upgradeCosts[numTiers + 1] = Infinity; //deals with JSON's incompatibility with Infinity
 	
 	//resets if the current version is incompatible with the savefile
-	if(typeof player.versionNum == 'undefined' || player.versionNum < 0.18){
+	if((typeof player.versionNum == 'undefined' && typeof player.money != 'undefined') || player.versionNum < 0.18){
 		init();
-		alert("Your save has been wiped as part of an update. Sorry for the inconvenience.\nWipe goes with: version " + versionNum);
+		alert("Your save has been wiped as part of an update. Sorry for the inconvenience.\nWipe goes with: version " + 0.18);
 		localStorage.setItem("playerStored", JSON.stringify(player));
 	}
 	else if(player.versionNum < versionNum) player.versionNum = versionNum;

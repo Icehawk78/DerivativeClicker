@@ -1,5 +1,8 @@
 Changelog:
 
+Version 0.183 (06/20/2014)
+Added number suffixes to trigintillion, added total ticks statistic, added time multiplier (which multiplies everything by 10 when you get to 100 ms tick length, to speed up the game)
+
 Version 0.182 (06/13/2014)
 More number display fixes, buttons use onmousedown events for greater responsiveness
 

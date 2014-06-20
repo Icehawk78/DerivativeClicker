@@ -43,6 +43,7 @@ var player = {
 	updateInterval: 1000,
 	numToBuy: 1,
 	clicksToGain: 25,
+	timeMult: 1,
 	
 	//these variables aren't changed by resets	
 	//statistics
@@ -50,6 +51,7 @@ var player = {
 	totalProofs: 0,
 	totalClicks: 0,
 	totalManualClicks: 0,
+	totalTicks: 0,
 	proofsToNextCurr: 100000000000000,
 	proofsToCurrTracker: 0,
 	mathematiciansToNextCurr: 7000000000,
@@ -61,7 +63,7 @@ var player = {
 	versionNum: versionNum
 };
 
-var versionNum = 0.182;
+var versionNum = 0.183;
 
 //these variables hold constants between plays
 var upgradeCostFactor = [1000, 1000, 1000, 1000, 1000, 1.8, 1];
@@ -111,7 +113,7 @@ function addClickUpgrades(highSch, undergrad, graduate, postdoc){
 
 //function to display values
 function displayNum(num, ifMoney){
-	var suffixes = ["K", "M", "B", "T", "Qa", "Qt", "Sx", "Sp", "Oc", "Nn", "Dc", "UDc", "DDc", "TDc", "QaDc", "QtDc", "SxDc", "SpDc", "ODc", "NDc", "Vi"]
+	var suffixes = ["K", "M", "B", "T", "Qa", "Qt", "Sx", "Sp", "Oc", "Nn", "Dc", "UDc", "DDc", "TDc", "QaDc", "QtDc", "SxDc", "SpDc", "ODc", "NDc", "Vi", "UVi", "DVi", "TVi", "QaVi", "QtVi", "SxVi", "SpVi", "OcVi", "NnVi", "Tg"]
 	
 	for(var i = suffixes.length - 1; i >= 0; i--){
 		if(Math.abs(num) >= Math.pow(10, 3*i + 3) * 0.99999){
@@ -200,10 +202,12 @@ function init(){
 		updateInterval: 1000,
 		numToBuy: 1,
 		clicksToGain: 25,
+		timeMult: 1,
 		totalMoneyEarned: 0,
 		totalProofs: 0,
 		totalClicks: 0,
 		totalManualClicks: 0,
+		totalTicks: 0,
 		proofsToNextCurr: 100000000000000,
 		proofsToCurrTracker: 0,
 		mathematiciansToNextCurr: 7000000000,
@@ -328,6 +332,7 @@ function reset(tier) {
 				clickTracker: 0,
 				updateInterval: 1000,
 				clicksToGain: 25,
+				timeMult: 1,
 				resetCurrTracker: 0
 			});
 			
@@ -422,7 +427,8 @@ function updateInventory() {
 
 function updateStats(){
 	var newStats = statsTemplate({totalMoneyEarned: displayNum(player.totalMoneyEarned, true), totalProofs: displayNum(player.totalProofs, false),
-								totalClicks: displayNum(player.totalClicks, false), totalManualClicks: displayNum(player.totalManualClicks, false)});
+								totalClicks: displayNum(player.totalClicks, false), totalManualClicks: displayNum(player.totalManualClicks, false), 
+								totalTicks: displayNum(player.totalTicks, false), timeMult: displayNum(player.timeMult, false)});
   
 	$("#statContainer").html(newStats);
 }
@@ -635,26 +641,26 @@ setTimeout(function update(){
 		}
 		
 		//adds money
-		addMoney(player.buildings[0].owned * player.deriv1Money * player.mult[0] * globalMult[0]);
-		addMoney(player.buildings[2].owned * 2 * player.mult[0] * globalMult[0]);
+		addMoney(player.buildings[0].owned * player.deriv1Money * player.mult[0] * globalMult[0] * player.timeMult);
+		addMoney(player.buildings[2].owned * 2 * player.mult[0] * globalMult[0] * player.timeMult);
 		
 		//checks if enough money to add full amount of proofs: if so, adds proofs, otherwise, adds as many proofs as possible
-		if(player.money >= player.buildings[1].owned * player.costPerProof * player.mult[0] * globalMult[0]){
-			addProofs(player.buildings[1].owned * player.mult[0] * globalMult[0]);
+		if(player.money >= player.buildings[1].owned * player.costPerProof * player.mult[0] * globalMult[0] * player.timeMult){
+			addProofs(player.buildings[1].owned * player.mult[0] * globalMult[0] * player.timeMult);
 		}
 		else addProofs(player.money / player.costPerProof);
 		
 		//does stuff every ten ticks
-		if(update.count === 10){
+		while(update.count >= 10){
 			inventoryAdder();
-			update.count = 0;
+			update.count -= 10;
 		}
 	
 		//does stuff every 60 ticks
-		if(update.count2 === 60){
+		while(update.count2 >= 60){
 			save();
 			moneyButtonClick(player.upgrades[0]);
-			update.count2 = 0;
+			update.count2 -= 60;
 		}
 		
 		//checks if enough proofs/mathematicians for reset currency: if so, adds reset currency
@@ -677,8 +683,9 @@ setTimeout(function update(){
 		player.netMoneyPerSecond = player.moneyPerSecond - (player.proofsPerSecond * player.costPerProof);
 		player.moneyPerAutoclick = player.upgrades[0] * player.moneyPerClick;
 		
-		update.count++;
-		update.count2++;
+		update.count += player.timeMult;
+		update.count2 += player.timeMult;
+		player.totalTicks += player.timeMult;
 		
 		player.updateInterval = 1000 * Math.pow(0.98, Math.log(player.buildings[4].owned * player.mult[0] * globalMult[0] + 1));
 		
@@ -710,7 +717,9 @@ setTimeout(function update(){
 	
 	update.before = new Date();
 	
-	setTimeout(update, player.updateInterval);
+	if(player.updateInterval * player.timeMult < 100) player.timeMult *= 10; //sets up time multiplier if game's ticking too fast
+	
+	setTimeout(update, player.updateInterval * player.timeMult);
 }, player.updateInterval);
 
 //stuff that happens every ten ticks (i.e. inventory additions)

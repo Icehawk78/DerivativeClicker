@@ -3,7 +3,7 @@ Rollover hilarious jokes/stats
 Reset currency buyables: change click improver to reset curr buyable, ticks between builds decrease, upgrades influenced by certain buildings
 */
 
-var player = {
+var startPlayer = {
 	//currencies
 	money: 0,
 	moneyPerSecond: 0,
@@ -62,6 +62,8 @@ var player = {
 	resetCurr: [0, 0, 0, 0, 0],
 	versionNum: versionNum
 };
+
+var player = jQuery.extend(true, {}, startPlayer);
 
 var versionNum = 0.183;
 
@@ -179,44 +181,7 @@ function factorial(n){
 
 //functions that handle saving
 function init(){
-	player = {
-		money: 0,
-		moneyPerSecond: 0,
-		netMoneyPerSecond: 0,
-		moneyPerClick: 1,
-		moneyPerAutoclick: 0,
-		proofs: 0,
-		proofsPerSecond: 0,
-		costPerProof: 5,
-		deriv1Money: 0.05,
-		buildings: [new Building(1.1, 0.1, 0), new Building(1.1, 25000, 0), new Building(1.3, 0, 2), new Building(1.1, 5, 0), new Building(1.05, 1000, 0),
-				 	new Building(1.2, 500, 0), new Building(1.3, 20000000, 0), new Building(1.8, 0, 20000), new Building(1.2, 1000, 0), new Building(1.2, 100000000, 0),
-				 	new Building(1.5, 20000, 0), new Building(1.8, 1000000000, 0), new Building(2.5, 0, 1000000), new Building(1.4, 100000, 0), new Building(1.5, 10000000000000, 0),
-					new Building(2, 1000000, 1000), new Building(2.5, 500000000000, 0), new Building(4, 0, 30000000), new Building(2, 10000000, 0), new Building(2, 1000000000000000000, 0),
-					new Building(2.5, 200000000, 500000), new Building(3, 20000000000000, 0), new Building(5, 0, 1000000000), new Building(2.7, 10000000000, 0), new Building(3, 100000000000000000000000, 0)],
-		tierUpgrades: [0, 0, 0, 0, 0],
-		upgrades: [0, 0],
-		upgradeCosts: [1000000, 1000000000, 1000000000000, 1000000000000000, 1000000000000000000, 100000, 10],
-		mult: [1, 1, 1, 1, 1],
-		clickTracker: 0,
-		updateInterval: 1000,
-		numToBuy: 1,
-		clicksToGain: 25,
-		timeMult: 1,
-		totalMoneyEarned: 0,
-		totalProofs: 0,
-		totalClicks: 0,
-		totalManualClicks: 0,
-		totalTicks: 0,
-		proofsToNextCurr: 100000000000000,
-		proofsToCurrTracker: 0,
-		mathematiciansToNextCurr: 7000000000,
-		mathematiciansToNextCurrTracker: 0,
-		resetCurrTracker: 0,
-		numResets: [0, 0, 0, 0, 0],
-		resetCurr: [0, 0, 0, 0, 0],
-		versionNum: versionNum
-	};
+	player = jQuery.extend(true, {}, startPlayer);
 };
 
 function save() {
@@ -258,7 +223,8 @@ function exportSave() {
 function importSave(){
 	var importText = prompt("Paste the text you were given by the export save dialog here.\n" +
 								"Warning: this will erase your current save!");
-	player = JSON.parse(atob(importText));
+	init();
+	$.extend(true, player, JSON.parse(atob(importText)));
 	if(player.upgrades[1] == 24) player.upgradeCosts[numTiers + 1] = Infinity;
 	save();
 	calcGlobalMult();
@@ -690,7 +656,7 @@ setTimeout(function update(){
 		player.updateInterval = 1000 * Math.pow(0.98, Math.log(player.buildings[4].owned * player.mult[0] * globalMult[0] + 1));
 		
 		//this fixes minimization by running until the interval tracker is less than 0 if the thing isn't active
-		if(!isActive) update.intervalTracker -= player.updateInterval;
+		if(!isActive) update.intervalTracker -= player.updateInterval * player.timeMult;
 		
 	}while(!isActive && update.intervalTracker > 0 && elapsedTime > player.updateInterval);
 	

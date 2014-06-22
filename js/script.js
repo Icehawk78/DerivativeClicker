@@ -119,7 +119,7 @@ function displayNum(num, ifMoney){
 	
 	for(var i = suffixes.length - 1; i >= 0; i--){
 		if(Math.abs(num) >= Math.pow(10, 3*i + 3) * 0.99999){
-			return i < 4 ? parseFloat(num/Math.pow(10, 3*i + 3)).toFixed(2) + suffixes[i] : parseFloat(num/Math.pow(10, 3*i + 3)).toFixed(2) + " " + suffixes[i];
+			return i < 4 ? parseFloat(num/Math.pow(10, 3*i + 3)).toFixed(2) + suffixes[i] : parseFloat(num/Math.pow(10, 3*i + 3)).toFixed(2) + " " + suffixes[i]; //spaces out first four suffixes
 		}
 	}
 	
@@ -190,6 +190,8 @@ function save() {
 	
 	var d = new Date();
 	$("#lastSave").html(d.toLocaleTimeString());
+	
+	ga('send', 'event', 'save', 'click', 'save'); //analytics
 }
 
 function load() {

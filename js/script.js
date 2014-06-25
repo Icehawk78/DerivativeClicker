@@ -638,8 +638,8 @@ update = function(){
 			}
 		}
 		else{
-			var currToGain = Math.floor(Math.pow(-player.proofsToNextCurr/7812500 + Math.pow(40+player.proofsToCurrTracker, 5), 1/5)) - 40 - player.proofsToCurrTracker; //approximate reset curr gained without while loop
-			player.proofsToNextCurr += 7812500 * (Math.pow(40 + currToGain, 5) - Math.pow(40 + player.resetCurrTracker - 1, 5));
+			var currToGain = Math.ceil(Math.pow(-player.proofsToNextCurr/7812500 + Math.pow(40+player.proofsToCurrTracker, 5), 1/5)) - 40 - player.proofsToCurrTracker; //approximate reset curr gained without while loop
+			player.proofsToNextCurr += 7812500 * (Math.pow(40 + currToGain + player.proofsToCurrTracker, 5) - Math.pow(40 + player.proofsToCurrTracker - 1, 5));
 			player.resetCurrTracker += currToGain;
 			player.proofsToCurrTracker += currToGain;
 		}

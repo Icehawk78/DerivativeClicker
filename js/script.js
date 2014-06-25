@@ -455,7 +455,6 @@ function moneyButtonClick(amount) {
 		calcMult(1);
 		addMoneyPerClick(0.1 * player.mult[0] * toAdd * globalMult[0]);
 		addClickUpgrades(toAdd, Math.round(player.buildings[13].owned * player.mult[2] * globalMult[2]), Math.round(player.buildings[18].owned * player.mult[3] * globalMult[3]), Math.round(player.buildings[23].owned * player.mult[4] * globalMult[4]));
-		update = true;
 	}
 	updateInventory();
 }

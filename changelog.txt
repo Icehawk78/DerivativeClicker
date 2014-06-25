@@ -1,5 +1,8 @@
 Changelog:
 
+Version 0.184 (06/25/2014)
+Changed prestige proof formula to an explicit formula, moved update function into global namespace
+
 Version 0.183 (06/20/2014)
 Added number suffixes to trigintillion, added total ticks statistic, added time multiplier (which multiplies everything by 10 when you get to 100 ms tick length, to speed up the game)
 

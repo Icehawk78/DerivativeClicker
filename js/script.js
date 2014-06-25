@@ -65,7 +65,7 @@ var startPlayer = {
 
 var player = jQuery.extend(true, {}, startPlayer);
 
-var versionNum = 0.183;
+var versionNum = 0.184;
 
 //these variables hold constants between plays
 var upgradeCostFactor = [1000, 1000, 1000, 1000, 1000, 1.8, 1];
@@ -579,8 +579,7 @@ function buyUpgrade(index){
 	}
 }
 
-//stuff that happens each tick
-setTimeout(function update(){
+update = function(){
 	// update.count makes stuff happen every 3 ticks
 	if(typeof update.count == 'undefined'){
 		update.count = 0;
@@ -632,11 +631,20 @@ setTimeout(function update(){
 		}
 		
 		//checks if enough proofs/mathematicians for reset currency: if so, adds reset currency
-		while(player.proofsToNextCurr < 0){
-			player.resetCurrTracker++;
-			player.proofsToCurrTracker++;
-			player.proofsToNextCurr += 100 * Math.pow(25 * (40 + player.proofsToCurrTracker), 4);
+		if(player.proofsToNextCurr > -100000 * Math.pow(25 * (40 + player.proofsToCurrTracker), 4)){
+			while(player.proofsToNextCurr < 0){
+				player.resetCurrTracker++;
+				player.proofsToCurrTracker++;
+				player.proofsToNextCurr += 100 * Math.pow(25 * (40 + player.proofsToCurrTracker), 4);
+			}
 		}
+		else{
+			var currToGain = Math.floor(Math.pow(-player.proofsToNextCurr/7812500 + Math.pow(40+player.proofsToCurrTracker, 5), 1/5)) - 40 - player.proofsToCurrTracker; //approximate reset curr gained without while loop
+			player.proofsToNextCurr += 7812500 * (Math.pow(40 + currToGain, 5) - Math.pow(40 + player.resetCurrTracker - 1, 5));
+			player.resetCurrTracker += currToGain;
+			player.proofsToCurrTracker += currToGain;
+		}
+		
 		while(player.mathematiciansToNextCurr < 0){
 			player.resetCurrTracker++;
 			player.mathematiciansToNextCurrTracker++;
@@ -688,7 +696,9 @@ setTimeout(function update(){
 	if(player.updateInterval * player.timeMult < 100) player.timeMult *= 10; //sets up time multiplier if game's ticking too fast
 	
 	setTimeout(update, player.updateInterval * player.timeMult);
-}, player.updateInterval);
+}
+//stuff that happens each tick
+setTimeout(update, player.updateInterval * player.timeMult);
 
 //stuff that happens every ten ticks (i.e. inventory additions)
 function inventoryAdder(){

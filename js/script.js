@@ -436,7 +436,7 @@ function updatePrestige(){
 }
 
 function ifUnlockedTier(tier){
-	if(player.numResets[tier - 1] >= 1) return true;
+	if(player.numResets[tier - 5] >= 1) return true;
 	return false;
 }
 

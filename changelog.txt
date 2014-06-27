@@ -1,5 +1,8 @@
 Changelog:
 
+Version 0.2 (06/27/2014)
+Added a sixth derivative (currently unlocked on first 2nd tier reset) as well as related sixth tier stuff, made 5th tier reset possible, refactored some code.
+
 Version 0.184 (06/25/2014)
 Changed prestige proof formula to an explicit formula, moved update function into global namespace
 
@@ -49,4 +52,4 @@ Version 0.02 (03/20/14)
 Balancing changes (buffed autoclickers, nerfed multipliers, changed prices of some things). Also added upper navigation bar.
 
 Version 0.01 (03/18/14)
-First actual version, and first version I'd call a game.
+First actual version, and first version I'd call a complete game.

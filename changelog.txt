@@ -1,5 +1,8 @@
 Changelog:
 
+Version 0.21 (06/27/2014)
+Changed mathematician prestige formula to an explicit formula, bugfixes for version 0.2
+
 Version 0.2 (06/27/2014)
 Added a sixth derivative (currently unlocked on first 2nd tier reset) as well as related sixth tier stuff, made 5th tier reset possible, refactored some code.
 

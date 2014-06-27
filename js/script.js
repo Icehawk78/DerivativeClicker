@@ -67,7 +67,7 @@ var startPlayer = {
 
 var player = jQuery.extend(true, {}, startPlayer);
 
-var versionNum = 0.2;
+var versionNum = 0.21;
 
 //these variables hold constants between plays
 var upgradeCostFactor = [1.8, 1];
@@ -638,7 +638,7 @@ function buyUpgrade(index){
 		
 		if(index == 1){ //click improver
 			player.upgradeCosts[index] = factorial(player.upgrades[1]+1)*10*player.upgrades[1]+1
-			if(player.upgrades[index - numTiers] >= 24){
+			if(player.upgrades[index] >= 24){
 				player.upgradeCosts[index] = Infinity;
 			}
 			player.clicksToGain--;
@@ -715,17 +715,24 @@ var update = function(){
 			player.proofsToCurrTracker += currToGain;
 		}
 		
-		while(player.mathematiciansToNextCurr < 0){
-			player.resetCurrTracker++;
-			player.mathematiciansToNextCurrTracker++;
-			player.mathematiciansToNextCurr += 70 * Math.pow((100 + player.mathematiciansToNextCurrTracker), 4)
+		if(player.mathematiciansToNextCurr > -70000 * Math.pow(100 + player.mathematiciansToNextCurrTracker, 4)){
+			while(player.mathematiciansToNextCurr < 0){
+				player.resetCurrTracker++;
+				player.mathematiciansToNextCurrTracker++;
+				player.mathematiciansToNextCurr += 70 * Math.pow((100 + player.mathematiciansToNextCurrTracker), 4)
+			}
 		}
-	
+		else{
+			var currToGain = Math.ceil(Math.pow(-player.mathematiciansToNextCurr/14 + Math.pow(100+player.mathematiciansToNextCurrTracker, 5), 1/5)) - 100 - player.mathematiciansToNextCurrTracker; //approximate reset curr gained without while loop
+			player.mathematiciansToNextCurr += 14 * (Math.pow(100 + currToGain + player.mathematiciansToNextCurrTracker, 5) - Math.pow(100 + player.mathematiciansToNextCurrTracker - 1, 5));
+			player.resetCurrTracker += currToGain;
+			player.mathematiciansToNextCurrTracker += currToGain;
+		}
 		
 		//recalculates money/proofs per tick
 		player.moneyPerClick = ((player.buildings[3].owned * player.mult[0] * 0.1) + 1) * globalMult[0];
 		player.moneyPerSecond = (((player.buildings[0].owned * player.deriv1Money * player.mult[0]) + (player.buildings[2].owned * 2 * player.mult[0])) * globalMult[0]);
-		player.proofsPerSecond = Math.floor(player.buildings[1].owned * player.mult[0] * globalMult[0]);
+		player.proofsPerSecond = Math.round(player.buildings[1].owned * player.mult[0] * globalMult[0]);
 		player.netMoneyPerSecond = player.moneyPerSecond - (player.proofsPerSecond * player.costPerProof);
 		player.moneyPerAutoclick = player.upgrades[0] * player.moneyPerClick;
 		

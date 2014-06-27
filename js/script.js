@@ -455,12 +455,20 @@ function updateUpgrades(){
 	
 	buttonList = jQuery.makeArray($("#upgradesTable tr .button"));
 	
-	for(var i = 0; i < buttonList.length; i++){
-		if(player.money < player.upgradeCosts[i]){
+	for(var i = 0; i < numTiers; i++){
+		if(player.money < player.tierUpgradeCosts[i]){
 			buttonList[i].className = "button";
 		}
 		else{
 			buttonList[i].className = "buttonLit";
+		}
+	}
+	for(var i = 0; i < 2; i++){
+		if(player.money < player.upgradeCosts[i]){
+			buttonList[i + numTiers].className = "button";
+		}
+		else{
+			buttonList[i + numTiers].className = "buttonLit";
 		}
 	}
 }

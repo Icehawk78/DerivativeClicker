@@ -443,7 +443,7 @@ function updateUpgrades(){
 										tier2UpgradeCost: displayNum(player.tierUpgradeCosts[1], true), tier2UpgradeOwned: displayNum(player.tierUpgrades[1], false), tier2Mult: displayNum(player.mult[1], false),
 										tier3UpgradeCost: displayNum(player.tierUpgradeCosts[2], true), tier3UpgradeOwned: displayNum(player.tierUpgrades[2], false), tier3Mult: displayNum(player.mult[2], false),
 										tier4UpgradeCost: displayNum(player.tierUpgradeCosts[3], true), tier4UpgradeOwned: displayNum(player.tierUpgrades[3], false), tier4Mult: displayNum(player.mult[3], false),
-										tier5UpgradeCost: displayNum(player.tierUpgradeCosts[4], true), tier5UpgradeOwned: displayNum(player.tierUpgrades[4], false), tier5Mult: displayNum(player.mult[5], false),
+										tier5UpgradeCost: displayNum(player.tierUpgradeCosts[4], true), tier5UpgradeOwned: displayNum(player.tierUpgrades[4], false), tier5Mult: displayNum(player.mult[4], false),
 										tier6UpgradeCost: displayNum(player.tierUpgradeCosts[5], true), tier6UpgradeOwned: displayNum(player.tierUpgrades[5], false), tier6Mult: displayNum(player.mult[5], false),
 										autoclickerCost: displayNum(player.upgradeCosts[0], true), autoclickerOwned: displayNum(player.upgrades[0], false),
 										clickImproverCost: displayNum(player.upgradeCosts[1], true), clickImproverOwned: displayNum(player.upgrades[1], false)});

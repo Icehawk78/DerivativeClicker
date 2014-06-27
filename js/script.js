@@ -306,7 +306,7 @@ function reset(tier) {
 				 new Building(3, 50000000000, 25000000), new Building(3.5, 10000000000000000, 0), new Building(6, 0, 300000000000), new Building(3.2, 10000000000000, 0), new Building(3.5, 10000000000000000000000000, 0)],
 				tierUpgrades: [0, 0, 0, 0, 0, 0],
 				upgrades: [0, 0],
-				tierUpgradeCosts: [1000000, 1000000000, 1000000000000, 1000000000000000, 1000000000000000000],
+				tierUpgradeCosts: [1000000, 1000000000, 1000000000000, 1000000000000000, 1000000000000000000, 1000000000000000000000],
 				upgradeCosts: [100000, 10],
 				mult: [1, 1, 1, 1, 1, 1],
 				clickTracker: 0,
@@ -436,7 +436,7 @@ function updatePrestige(){
 }
 
 function ifUnlockedTier(tier){
-	if(player.numResets[0] >= tier - 4) return true;
+	if(player.numResets[tier - 1] >= 1) return true;
 	return false;
 }
 
@@ -454,6 +454,7 @@ function updateUpgrades(){
 	
 	//changes text if tiers aren't unlocked
 	if(!ifUnlockedTier(5)) $("#ifUnlocked5").html("You haven't unlocked this tier. Don't waste your money.");
+	if(!ifUnlockedTier(6)) $("#ifUnlocked6").html("You haven't unlocked this tier. Don't waste your money.");
 	
 	buttonList = jQuery.makeArray($("#upgradesTable tr .button"));
 	

@@ -3,7 +3,7 @@ Rollover hilarious jokes/stats
 Reset currency buyables: change click improver to reset curr buyable, ticks between builds decrease, upgrades influenced by certain buildings
 */
 
-var player = {
+var startPlayer = {
 	//currencies
 	money: 0,
 	moneyPerSecond: 0,
@@ -25,24 +25,27 @@ var player = {
 				 new Building(1.2, 500, 0), new Building(1.3, 20000000, 0), new Building(1.8, 0, 20000), new Building(1.2, 1000, 0), new Building(1.2, 100000000, 0),
 				 new Building(1.5, 20000, 0), new Building(1.8, 1000000000, 0), new Building(2.5, 0, 1000000), new Building(1.4, 100000, 0), new Building(1.5, 10000000000000, 0),
 				 new Building(2, 1000000, 1000), new Building(2.5, 500000000000, 0), new Building(4, 0, 30000000), new Building(2, 10000000, 0), new Building(2, 1000000000000000000, 0),
-				 new Building(2.5, 200000000, 500000), new Building(3, 20000000000000, 0), new Building(5, 0, 1000000000), new Building(2.7, 10000000000, 0), new Building(3, 100000000000000000000000, 0)],
+				 new Building(2.5, 200000000, 500000), new Building(3, 20000000000000, 0), new Building(5, 0, 1000000000), new Building(2.7, 10000000000, 0), new Building(3, 100000000000000000000000, 0),
+				 new Building(3, 50000000000, 25000000), new Building(3.5, 10000000000000000, 0), new Building(6, 0, 300000000000), new Building(3.2, 10000000000000, 0), new Building(3.5, 10000000000000000000000000, 0)],
 
 	/* upgrades: indexes
 	0: tier 1 upgrade, 1: tier 2 upgrade, 2: tier 3 upgrade, 3: tier 4 upgrade, 4: tier 5 upgrade
 	upgrades: 0: autoclicker, 1: click improver
 	*/	
-	tierUpgrades: [0, 0, 0, 0, 0],
+	tierUpgrades: [0, 0, 0, 0, 0, 0],
 	upgrades: [0, 0],
-	upgradeCosts: [1000000, 1000000000, 1000000000000, 1000000000000000, 1000000000000000000, 100000, 10],
+	tierUpgradeCosts: [1000000, 1000000000, 1000000000000, 1000000000000000, 1000000000000000000, 1000000000000000000000],
+	upgradeCosts: [100000, 10],
 	
 	//upgrade multipliers
-	mult: [1, 1, 1, 1, 1],
+	mult: [1, 1, 1, 1, 1, 1],
 	
 	//other tracking variables
 	clickTracker: 0,
 	updateInterval: 1000,
 	numToBuy: 1,
 	clicksToGain: 25,
+	timeMult: 1,
 	
 	//these variables aren't changed by resets	
 	//statistics
@@ -50,25 +53,28 @@ var player = {
 	totalProofs: 0,
 	totalClicks: 0,
 	totalManualClicks: 0,
+	totalTicks: 0,
 	proofsToNextCurr: 100000000000000,
 	proofsToCurrTracker: 0,
 	mathematiciansToNextCurr: 7000000000,
 	mathematiciansToNextCurrTracker: 0,
 	resetCurrTracker: 0, //this variable does have to be reset
 	
-	numResets: [0, 0, 0, 0, 0],
-	resetCurr: [0, 0, 0, 0, 0],
+	numResets: [0, 0, 0, 0, 0, 0],
+	resetCurr: [0, 0, 0, 0, 0, 0],
 	versionNum: versionNum
 };
 
-var versionNum = 0.181;
+var player = jQuery.extend(true, {}, startPlayer);
+
+var versionNum = 0.2;
 
 //these variables hold constants between plays
-var upgradeCostFactor = [1000, 1000, 1000, 1000, 1000, 1.8, 1];
+var upgradeCostFactor = [1.8, 1];
 
-var globalMult = [1, 1, 1, 1, 1];
+var globalMult = [1, 1, 1, 1, 1, 1];
 
-var numTiers = 5;
+var numTiers = 6;
 
 var isActive = true;
 
@@ -111,11 +117,11 @@ function addClickUpgrades(highSch, undergrad, graduate, postdoc){
 
 //function to display values
 function displayNum(num, ifMoney){
-	var suffixes = ["K", "M", "B", "T", "Qa", "Qt", "Sx", "Sp", "Oc", "Nn", "Dc", "UDc", "DDc", "TDc", "QaDc", "QtDc", "SxDc", "SpDc", "ODc", "NDc", "Vi"]
+	var suffixes = ["K", "M", "B", "T", "Qa", "Qt", "Sx", "Sp", "Oc", "Nn", "Dc", "UDc", "DDc", "TDc", "QaDc", "QtDc", "SxDc", "SpDc", "ODc", "NDc", "Vi", "UVi", "DVi", "TVi", "QaVi", "QtVi", "SxVi", "SpVi", "OcVi", "NnVi", "Tg"]
 	
 	for(var i = suffixes.length - 1; i >= 0; i--){
-		if(Math.abs(num) >= Math.pow(10, 3*i + 3) * 0.9999){
-			return i < 4 ? parseFloat(num/Math.pow(10, 3*i + 3)).toFixed(2) + suffixes[i] : parseFloat(num/Math.pow(10, 3*i + 3)).toFixed(2) + " " + suffixes[i];
+		if(Math.abs(num) >= Math.pow(10, 3*i + 3) * 0.99999){
+			return i < 4 ? parseFloat(num/Math.pow(10, 3*i + 3)).toFixed(2) + suffixes[i] : parseFloat(num/Math.pow(10, 3*i + 3)).toFixed(2) + " " + suffixes[i]; //spaces out first four suffixes
 		}
 	}
 	
@@ -139,6 +145,10 @@ function calcMult(mult){
 			break;
 		case 5:
 			player.mult[4] = Math.round(10000 + (player.tierUpgrades[4] * 0.05 * (player.buildings[20].manual + player.buildings[21].manual + player.buildings[22].manual + player.buildings[23].manual + player.buildings[24].manual))*10000)/10000;
+			break;
+		case 6:
+			player.mult[5] = Math.round(10000 + (player.tierUpgrades[5] * 0.08 * (player.buildings[25].manual + player.buildings[26].manual + player.buildings[27].manual + player.buildings[28].manual + player.buildings[29].manual))*10000)/10000;
+			break;
 		default:
 			break;
 	}
@@ -177,42 +187,7 @@ function factorial(n){
 
 //functions that handle saving
 function init(){
-	player = {
-		money: 0,
-		moneyPerSecond: 0,
-		netMoneyPerSecond: 0,
-		moneyPerClick: 1,
-		moneyPerAutoclick: 0,
-		proofs: 0,
-		proofsPerSecond: 0,
-		costPerProof: 5,
-		deriv1Money: 0.05,
-		buildings: [new Building(1.1, 0.1, 0), new Building(1.1, 25000, 0), new Building(1.3, 0, 2), new Building(1.1, 5, 0), new Building(1.05, 1000, 0),
-				 	new Building(1.2, 500, 0), new Building(1.3, 20000000, 0), new Building(1.8, 0, 20000), new Building(1.2, 1000, 0), new Building(1.2, 100000000, 0),
-				 	new Building(1.5, 20000, 0), new Building(1.8, 1000000000, 0), new Building(2.5, 0, 1000000), new Building(1.4, 100000, 0), new Building(1.5, 10000000000000, 0),
-					new Building(2, 1000000, 1000), new Building(2.5, 500000000000, 0), new Building(4, 0, 30000000), new Building(2, 10000000, 0), new Building(2, 1000000000000000000, 0),
-					new Building(2.5, 200000000, 500000), new Building(3, 20000000000000, 0), new Building(5, 0, 1000000000), new Building(2.7, 10000000000, 0), new Building(3, 100000000000000000000000, 0)],
-		tierUpgrades: [0, 0, 0, 0, 0],
-		upgrades: [0, 0],
-		upgradeCosts: [1000000, 1000000000, 1000000000000, 1000000000000000, 1000000000000000000, 100000, 10],
-		mult: [1, 1, 1, 1, 1],
-		clickTracker: 0,
-		updateInterval: 1000,
-		numToBuy: 1,
-		clicksToGain: 25,
-		totalMoneyEarned: 0,
-		totalProofs: 0,
-		totalClicks: 0,
-		totalManualClicks: 0,
-		proofsToNextCurr: 100000000000000,
-		proofsToCurrTracker: 0,
-		mathematiciansToNextCurr: 7000000000,
-		mathematiciansToNextCurrTracker: 0,
-		resetCurrTracker: 0,
-		numResets: [0, 0, 0, 0, 0],
-		resetCurr: [0, 0, 0, 0, 0],
-		versionNum: versionNum
-	};
+	player = jQuery.extend(true, {}, startPlayer);
 };
 
 function save() {
@@ -221,6 +196,8 @@ function save() {
 	
 	var d = new Date();
 	$("#lastSave").html(d.toLocaleTimeString());
+	
+	ga('send', 'event', 'save', 'click', 'save'); //analytics
 }
 
 function load() {
@@ -254,21 +231,26 @@ function exportSave() {
 function importSave(){
 	var importText = prompt("Paste the text you were given by the export save dialog here.\n" +
 								"Warning: this will erase your current save!");
-	player = JSON.parse(atob(importText));
-	if(player.upgrades[1] == 24) player.upgradeCosts[numTiers + 1] = Infinity;
-	save();
-	calcGlobalMult();
-	$("#currentNumToBuy").html(player.numToBuy);
-	
-	updateInventory();
-	updateUpgrades();
-	updateStats();
-	updateMoney();
-	updatePrestige();
+								
+	if(importText){
+		init();
+		$.extend(true, player, startPlayer, JSON.parse(atob(importText)));
+		versionControl(true);
+		if(player.upgrades[1] == 24) player.upgradeCosts[1] = Infinity;
+		save();
+		calcGlobalMult();
+		$("#currentNumToBuy").html(player.numToBuy);
+		
+		updateInventory();
+		updateUpgrades();
+		updateStats();
+		updateMoney();
+		updatePrestige();
+	}
 }
 
-function ifMoreDerivs(){
-	if(player.numResets[0] == 0) return "Access to another derivative.\n"
+function ifMoreDerivs(tier){
+	if(player.numResets[tier - 1] == 0) return "Access to another derivative.\n"
 	return "";
 }
 
@@ -288,7 +270,7 @@ function reset(tier) {
 				confirmationText += ("At the cost of " + displayNum(Math.floor(player.resetCurr[i - 1] / 5) * 5, false) + " tier " + i + " reset currency.\n");
 			}
 		}
-		confirmationText += ifMoreDerivs();
+		confirmationText += ifMoreDerivs(tier);
 		
 		confirmationText += "\n\nYes, I know this looks pretty awful. If you have any ideas on how to restructure the text here I\'m all ears."
 		
@@ -320,14 +302,17 @@ function reset(tier) {
 					 		new Building(1.2, 500, 0), new Building(1.3, 20000000, 0), new Building(1.8, 0, 20000), new Building(1.2, 1000, 0), new Building(1.2, 100000000, 0),
 					 		new Building(1.5, 20000, 0), new Building(1.8, 1000000000, 0), new Building(2.5, 0, 1000000), new Building(1.4, 100000, 0), new Building(1.5, 10000000000000, 0),
 							new Building(2, 1000000, 1000), new Building(2.5, 500000000000, 0), new Building(4, 0, 30000000), new Building(2, 10000000, 0), new Building(2, 1000000000000000000, 0),
-							new Building(2.5, 200000000, 500000), new Building(3, 20000000000000, 0), new Building(5, 0, 1000000000), new Building(2.7, 10000000000, 0), new Building(3, 100000000000000000000000, 0)],
-				tierUpgrades: [0, 0, 0, 0, 0],
+							new Building(2.5, 200000000, 500000), new Building(3, 20000000000000, 0), new Building(5, 0, 1000000000), new Building(2.7, 10000000000, 0), new Building(3, 100000000000000000000000, 0),
+				 new Building(3, 50000000000, 25000000), new Building(3.5, 10000000000000000, 0), new Building(6, 0, 300000000000), new Building(3.2, 10000000000000, 0), new Building(3.5, 10000000000000000000000000, 0)],
+				tierUpgrades: [0, 0, 0, 0, 0, 0],
 				upgrades: [0, 0],
-				upgradeCosts: [1000000, 1000000000, 1000000000000, 1000000000000000, 1000000000000000000, 100000, 10],
-				mult: [1, 1, 1, 1, 1],
+				tierUpgradeCosts: [1000000, 1000000000, 1000000000000, 1000000000000000, 1000000000000000000, 1000000000000000000000],
+				upgradeCosts: [100000, 10],
+				mult: [1, 1, 1, 1, 1, 1],
 				clickTracker: 0,
 				updateInterval: 1000,
 				clicksToGain: 25,
+				timeMult: 1,
 				resetCurrTracker: 0
 			});
 			
@@ -346,6 +331,7 @@ function reset(tier) {
 var moneyTableTemplate = _.template($("#moneyTableTemplate").html());
 var inventoryTemplate = _.template($("#inventoryTemplate").html());
 var row5Template = _.template($("#row5Template").html())
+var row6Template = _.template($("#row6Template").html())
 var upgradesTemplate = _.template($("#upgradesTemplate").html());
 var statsTemplate = _.template($("#statsTemplate").html());
 var prestigeTemplate = _.template($("#prestigeTemplate").html());
@@ -364,7 +350,7 @@ function updateInventory() {
 										deriv2Owned: displayNum(player.buildings[5].owned, false), deriv2Cost: displayNum(player.buildings[5].moneyCost, true), deriv2Manual: displayNum(player.buildings[5].manual, false), deriv2Power: displayNum(Math.round(player.mult[1] * globalMult[1]), false),
 										deriv3Owned: displayNum(player.buildings[10].owned, false), deriv3Cost: displayNum(player.buildings[10].moneyCost, true), deriv3Manual: displayNum(player.buildings[10].manual, false), deriv3Power: displayNum(Math.round(player.mult[2] * globalMult[2]), false),
 										deriv4Owned: displayNum(player.buildings[15].owned, false), deriv4MoneyCost: displayNum(player.buildings[15].moneyCost, true), deriv4WidgetCost: displayNum(player.buildings[15].proofCost, false), deriv4Manual: displayNum(player.buildings[15].manual, false), deriv4Power: displayNum(Math.round(player.mult[3] * globalMult[3]), false),
-										combinatoricsOwned: displayNum(player.buildings[1].owned, false), combinatoricsCost: displayNum(player.buildings[1].moneyCost, true), combinatoricsManual: displayNum(player.buildings[1].manual, false), combinatoricsPower: displayNum(Math.floor(player.mult[0] * globalMult[0]), false),
+										combinatoricsOwned: displayNum(player.buildings[1].owned, false), combinatoricsCost: displayNum(player.buildings[1].moneyCost, true), combinatoricsManual: displayNum(player.buildings[1].manual, false), combinatoricsPower: displayNum(Math.round(player.mult[0] * globalMult[0]), false),
 										numberTheoryOwned: displayNum(player.buildings[6].owned, false), numberTheoryCost: displayNum(player.buildings[6].moneyCost, true), numberTheoryManual: displayNum(player.buildings[6].manual, false), numberTheoryPower: displayNum(Math.round(player.mult[1] * globalMult[1]), false),
 										calculusOwned: displayNum(player.buildings[11].owned, false), calculusCost: displayNum(player.buildings[11].moneyCost, true), calculusManual: displayNum(player.buildings[11].manual, false), calculusPower: displayNum(Math.round(player.mult[2] * globalMult[2]), false),
 										algebraOwned: displayNum(player.buildings[16].owned, false), algebraCost: displayNum(player.buildings[16].moneyCost, true), algebraManual: displayNum(player.buildings[16].manual, false), algebraPower: displayNum(Math.round(player.mult[3] * globalMult[3]), false),
@@ -386,12 +372,22 @@ function updateInventory() {
 										topologyOwned: displayNum(player.buildings[21].owned, false), topologyCost: displayNum(player.buildings[21].moneyCost, true), topologyManual: displayNum(player.buildings[21].manual, false), topologyPower: displayNum(Math.round(player.mult[4] * globalMult[4]), false),
 										designSchoolOwned: displayNum(player.buildings[22].owned, false), designSchoolCost: displayNum(player.buildings[22].proofCost, true), designSchoolManual: displayNum(player.buildings[22].manual, false), designSchoolPower: displayNum(Math.round(3 * player.mult[4] * globalMult[4]), false),
 										researchScientistOwned: displayNum(player.buildings[23].owned, false), researchScientistCost: displayNum(player.buildings[23].moneyCost, true), researchScientistManual: displayNum(player.buildings[23].manual, false), researchScientistPower: displayNum(Math.round(player.mult[4] * globalMult[4]), false),
-										carlGaussOwned: displayNum(player.buildings[24].owned, false), carlGaussCost: displayNum(player.buildings[24].moneyCost, true), carlGaussManual: displayNum(player.buildings[24].manual, false), carlGaussPower: displayNum(Math.floor(player.mult[4] * globalMult[4]), false),
-										clicksToGain: player.clicksToGain})
+										carlGaussOwned: displayNum(player.buildings[24].owned, false), carlGaussCost: displayNum(player.buildings[24].moneyCost, true), carlGaussManual: displayNum(player.buildings[24].manual, false), carlGaussPower: displayNum(Math.round(player.mult[4] * globalMult[4]), false),
+										clicksToGain: player.clicksToGain});
+										
+	var row6 = row6Template({deriv6Owned: displayNum(player.buildings[25].owned, false), deriv6MoneyCost: displayNum(player.buildings[25].moneyCost, true), deriv6ProofCost: displayNum(player.buildings[25].proofCost, true), deriv6Manual: displayNum(player.buildings[25].manual, false), deriv6Power: displayNum(Math.round(player.mult[5] * globalMult[5]), false),
+										geometryOwned: displayNum(player.buildings[26].owned, false), geometryCost: displayNum(player.buildings[26].moneyCost, true), geometryManual: displayNum(player.buildings[26].manual, false), geometryPower: displayNum(Math.round(player.mult[5] * globalMult[5]), false),
+										deanArchitectureOwned: displayNum(player.buildings[27].owned, false), deanArchitectureCost: displayNum(player.buildings[27].proofCost, true), deanArchitectureManual: displayNum(player.buildings[27].manual, false), deanArchitecturePower: displayNum(Math.round(3 * player.mult[5] * globalMult[5]), false),
+										scientificAwarenessOwned: displayNum(player.buildings[28].owned, false), scientificAwarenessCost: displayNum(player.buildings[28].moneyCost, true), scientificAwarenessManual: displayNum(player.buildings[28].manual, false), scientificAwarenessPower: displayNum(Math.round(player.mult[5] * globalMult[5]), false),
+										leonhardEulerOwned: displayNum(player.buildings[29].owned, false), leonhardEulerCost: displayNum(player.buildings[29].moneyCost, true), leonhardEulerManual: displayNum(player.buildings[29].manual, false), leonhardEulerPower: displayNum(Math.round(player.mult[5] * globalMult[5]), false),
+										clicksToGain: player.clicksToGain});
 	
 	$("#firstRows").html(firstRows);
 	if(player.numResets[0] >= 1) $("#row5").html(row5);
 	else $("#row5").html(null);
+	
+	if(player.numResets[1] >= 1) $("#row6").html(row6);
+	else $("#row6").html(null);
 	
 	//updates whether buttons are lit using a list of buttons	
 	buttonList = jQuery.makeArray($("#tableContainer div table tr .button"));
@@ -422,7 +418,8 @@ function updateInventory() {
 
 function updateStats(){
 	var newStats = statsTemplate({totalMoneyEarned: displayNum(player.totalMoneyEarned, true), totalProofs: displayNum(player.totalProofs, false),
-								totalClicks: displayNum(player.totalClicks, false), totalManualClicks: displayNum(player.totalManualClicks, false)});
+								totalClicks: displayNum(player.totalClicks, false), totalManualClicks: displayNum(player.totalManualClicks, false), 
+								totalTicks: displayNum(player.totalTicks, false), timeMult: displayNum(player.timeMult, false)});
   
 	$("#statContainer").html(newStats);
 }
@@ -439,32 +436,42 @@ function updatePrestige(){
 }
 
 function ifUnlockedTier(tier){
-	if(player.numResets[0] >= tier - 4) return true;
+	if(player.numResets[tier - 5] >= 1) return true;
 	return false;
 }
 
 function updateUpgrades(){
-	var newUpgrades = upgradesTemplate({tier1UpgradeCost: displayNum(player.upgradeCosts[0], true), tier1UpgradeOwned: displayNum(player.tierUpgrades[0], false), tier1Mult: displayNum(player.mult[0], false),
-										tier2UpgradeCost: displayNum(player.upgradeCosts[1], true), tier2UpgradeOwned: displayNum(player.tierUpgrades[1], false), tier2Mult: displayNum(player.mult[1], false),
-										tier3UpgradeCost: displayNum(player.upgradeCosts[2], true), tier3UpgradeOwned: displayNum(player.tierUpgrades[2], false), tier3Mult: displayNum(player.mult[2], false),
-										tier4UpgradeCost: displayNum(player.upgradeCosts[3], true), tier4UpgradeOwned: displayNum(player.tierUpgrades[3], false), tier4Mult: displayNum(player.mult[3], false),
-										tier5UpgradeCost: displayNum(player.upgradeCosts[4], true), tier5UpgradeOwned: displayNum(player.tierUpgrades[4], false), tier5Mult: displayNum(player.mult[4], false),
-										autoclickerCost: displayNum(player.upgradeCosts[5], true), autoclickerOwned: displayNum(player.upgrades[0], false),
-										clickImproverCost: displayNum(player.upgradeCosts[6], true), clickImproverOwned: displayNum(player.upgrades[1], false)});
+	var newUpgrades = upgradesTemplate({tier1UpgradeCost: displayNum(player.tierUpgradeCosts[0], true), tier1UpgradeOwned: displayNum(player.tierUpgrades[0], false), tier1Mult: displayNum(player.mult[0], false),
+										tier2UpgradeCost: displayNum(player.tierUpgradeCosts[1], true), tier2UpgradeOwned: displayNum(player.tierUpgrades[1], false), tier2Mult: displayNum(player.mult[1], false),
+										tier3UpgradeCost: displayNum(player.tierUpgradeCosts[2], true), tier3UpgradeOwned: displayNum(player.tierUpgrades[2], false), tier3Mult: displayNum(player.mult[2], false),
+										tier4UpgradeCost: displayNum(player.tierUpgradeCosts[3], true), tier4UpgradeOwned: displayNum(player.tierUpgrades[3], false), tier4Mult: displayNum(player.mult[3], false),
+										tier5UpgradeCost: displayNum(player.tierUpgradeCosts[4], true), tier5UpgradeOwned: displayNum(player.tierUpgrades[4], false), tier5Mult: displayNum(player.mult[4], false),
+										tier6UpgradeCost: displayNum(player.tierUpgradeCosts[5], true), tier6UpgradeOwned: displayNum(player.tierUpgrades[5], false), tier6Mult: displayNum(player.mult[5], false),
+										autoclickerCost: displayNum(player.upgradeCosts[0], true), autoclickerOwned: displayNum(player.upgrades[0], false),
+										clickImproverCost: displayNum(player.upgradeCosts[1], true), clickImproverOwned: displayNum(player.upgrades[1], false)});
 	
 	$("#upgrades").html(newUpgrades);
 	
 	//changes text if tiers aren't unlocked
 	if(!ifUnlockedTier(5)) $("#ifUnlocked5").html("You haven't unlocked this tier. Don't waste your money.");
+	if(!ifUnlockedTier(6)) $("#ifUnlocked6").html("You haven't unlocked this tier. Don't waste your money.");
 	
 	buttonList = jQuery.makeArray($("#upgradesTable tr .button"));
 	
-	for(var i = 0; i < buttonList.length; i++){
-		if(player.money < player.upgradeCosts[i]){
+	for(var i = 0; i < numTiers; i++){
+		if(player.money < player.tierUpgradeCosts[i]){
 			buttonList[i].className = "button";
 		}
 		else{
 			buttonList[i].className = "buttonLit";
+		}
+	}
+	for(var i = 0; i < 2; i++){
+		if(player.money < player.upgradeCosts[i]){
+			buttonList[i + numTiers].className = "button";
+		}
+		else{
+			buttonList[i + numTiers].className = "buttonLit";
 		}
 	}
 }
@@ -480,10 +487,45 @@ function moneyButtonClick(amount) {
 		player.clickTracker -= player.clicksToGain;
 		calcMult(1);
 		addMoneyPerClick(0.1 * player.mult[0] * toAdd * globalMult[0]);
-		addClickUpgrades(toAdd, Math.round(player.buildings[13].owned * player.mult[2] * globalMult[2]), Math.round(player.buildings[18].owned * player.mult[3] * globalMult[3]), Math.round(player.buildings[23].owned * player.mult[4] * globalMult[4]));
-		update = true;
+		for(var i = 0; i < numTiers - 1; i++){
+			player.buildings[5*i + 3].owned += Math.round(player.buildings[5*(i+1) + 3].owned*player.mult[i+1]*globalMult[i+1]);
+		}
 	}
 	updateInventory();
+}
+
+function versionControl(ifImport){
+	//resets if the current version is incompatible with the savefile
+	if(player.versionNum < 0.18){
+		if(ifImport){
+			alert("This save is incompatible with the current version.");
+			return;
+		}
+		alert("Your save has been wiped as part of an update. Sorry for the inconvenience.\nWipe goes with: version " + 0.18);
+		init();
+		localStorage.setItem("playerStored", JSON.stringify(player));
+		return;
+	}
+	else if(player.versionNum < 0.2){
+		player.tierUpgradeCosts[0] = player.upgradeCosts[0];
+		player.tierUpgradeCosts[1] = player.upgradeCosts[1];
+		player.tierUpgradeCosts[2] = player.upgradeCosts[2];
+		player.tierUpgradeCosts[3] = player.upgradeCosts[3];
+		player.tierUpgradeCosts[4] = player.upgradeCosts[4];
+		player.upgradeCosts[0] = player.upgradeCosts[5];
+		player.upgradeCosts[1] = player.upgradeCosts[6];
+		player.upgradeCosts[2] = undefined;
+		player.upgradeCosts[3] = undefined;
+		player.upgradeCosts[4] = undefined;
+		player.upgradeCosts[5] = undefined;
+		player.upgradeCosts[6] = undefined;
+		player.versionNum = versionNum;
+	}
+	if(player.versionNum < versionNum || typeof player.versionNum == 'undefined'){
+		var saveText = btoa(JSON.stringify(player));
+		if(!ifImport) alert("New version since you last played. You may want to save your savefile in case there are bugs:\n" + saveText);
+		player.versionNum = versionNum;
+	}
 }
 
 //things that run on startup: moneybutton initialization, tabs, initial DOM updates, load save
@@ -494,14 +536,9 @@ $(document).ready(function(){
 	if(typeof enableChart == 'undefined') enableChart = true;
 	if(!enableChart) $("#chartStuff").toggle();
 	
-	if(player.upgrades[1] == 24) player.upgradeCosts[numTiers + 1] = Infinity; //deals with JSON's incompatibility with Infinity
+	versionControl(false);
 	
-	//resets if the current version is incompatible with the savefile
-	if(typeof player.versionNum == 'undefined' || player.versionNum < 0.18){
-		init();
-		localStorage.setItem("playerStored", JSON.stringify(player));
-	}
-	else if(player.versionNum < versionNum) player.versionNum = versionNum;
+	if(player.upgrades[1] == 24) player.upgradeCosts[1] = Infinity; //deals with JSON's incompatibility with Infinity
 	
 	$("#version").html(player.versionNum);
 
@@ -578,20 +615,28 @@ function buyBuilding(index){
   
 //function to buy upgrades: onclick events
 
-function buyUpgrade(index){
-	if(player.money >= player.upgradeCosts[index]){
-		if(index < numTiers){
-			player.tierUpgrades[index]++;
-		}
-		else{
-			player.upgrades[index - numTiers]++;
-		}
+function buyTierUpgrade(index){
+	if(player.money >= player.tierUpgradeCosts[index]){
 		
-		addMoney(-player.upgradeCosts[index]);
-		player.upgradeCosts[index] = Math.round((player.upgradeCosts[index] * upgradeCostFactor[index])*100)/100;
+		player.tierUpgrades[index]++;
+
+		addMoney(-player.tierUpgradeCosts[index]);
+		player.tierUpgradeCosts[index] = Math.round((player.tierUpgradeCosts[index] * 1000)*100)/100;
 		calcMult(index + 1);
 		
-		if(index == numTiers + 1){
+		updateUpgrades();
+		updateMoney();
+	}
+}
+function buyUpgrade(index){
+	if(player.money >= player.upgradeCosts[index]){
+
+		player.upgrades[index]++;
+
+		addMoney(-player.upgradeCosts[index]);
+		player.upgradeCosts[index] = Math.round((player.upgradeCosts[index] * upgradeCostFactor[index])*100)/100;
+		
+		if(index == 1){ //click improver
 			player.upgradeCosts[index] = factorial(player.upgrades[1]+1)*10*player.upgrades[1]+1
 			if(player.upgrades[index - numTiers] >= 24){
 				player.upgradeCosts[index] = Infinity;
@@ -604,8 +649,7 @@ function buyUpgrade(index){
 	}
 }
 
-//stuff that happens each tick
-setTimeout(function update(){
+var update = function(){
 	// update.count makes stuff happen every 3 ticks
 	if(typeof update.count == 'undefined'){
 		update.count = 0;
@@ -634,34 +678,43 @@ setTimeout(function update(){
 		}
 		
 		//adds money
-		addMoney(player.buildings[0].owned * player.deriv1Money * player.mult[0] * globalMult[0]);
-		addMoney(player.buildings[2].owned * 2 * player.mult[0] * globalMult[0]);
+		addMoney(player.buildings[0].owned * player.deriv1Money * player.mult[0] * globalMult[0] * player.timeMult);
+		addMoney(player.buildings[2].owned * 2 * player.mult[0] * globalMult[0] * player.timeMult);
 		
 		//checks if enough money to add full amount of proofs: if so, adds proofs, otherwise, adds as many proofs as possible
-		if(player.money >= player.buildings[1].owned * player.costPerProof * player.mult[0] * globalMult[0]){
-			addProofs(player.buildings[1].owned * player.mult[0] * globalMult[0]);
+		if(player.money >= player.buildings[1].owned * player.costPerProof * player.mult[0] * globalMult[0] * player.timeMult){
+			addProofs(player.buildings[1].owned * player.mult[0] * globalMult[0] * player.timeMult);
 		}
 		else addProofs(player.money / player.costPerProof);
 		
 		//does stuff every ten ticks
-		if(update.count === 10){
+		while(update.count >= 10){
 			inventoryAdder();
-			update.count = 0;
+			update.count -= 10;
 		}
 	
 		//does stuff every 60 ticks
-		if(update.count2 === 60){
+		while(update.count2 >= 60){
 			save();
 			moneyButtonClick(player.upgrades[0]);
-			update.count2 = 0;
+			update.count2 -= 60;
 		}
 		
 		//checks if enough proofs/mathematicians for reset currency: if so, adds reset currency
-		while(player.proofsToNextCurr < 0){
-			player.resetCurrTracker++;
-			player.proofsToCurrTracker++;
-			player.proofsToNextCurr += 100 * Math.pow(25 * (40 + player.proofsToCurrTracker), 4);
+		if(player.proofsToNextCurr > -100000 * Math.pow(25 * (40 + player.proofsToCurrTracker), 4)){
+			while(player.proofsToNextCurr < 0){
+				player.resetCurrTracker++;
+				player.proofsToCurrTracker++;
+				player.proofsToNextCurr += 100 * Math.pow(25 * (40 + player.proofsToCurrTracker), 4);
+			}
 		}
+		else{
+			var currToGain = Math.ceil(Math.pow(-player.proofsToNextCurr/7812500 + Math.pow(40+player.proofsToCurrTracker, 5), 1/5)) - 40 - player.proofsToCurrTracker; //approximate reset curr gained without while loop
+			player.proofsToNextCurr += 7812500 * (Math.pow(40 + currToGain + player.proofsToCurrTracker, 5) - Math.pow(40 + player.proofsToCurrTracker - 1, 5));
+			player.resetCurrTracker += currToGain;
+			player.proofsToCurrTracker += currToGain;
+		}
+		
 		while(player.mathematiciansToNextCurr < 0){
 			player.resetCurrTracker++;
 			player.mathematiciansToNextCurrTracker++;
@@ -676,13 +729,14 @@ setTimeout(function update(){
 		player.netMoneyPerSecond = player.moneyPerSecond - (player.proofsPerSecond * player.costPerProof);
 		player.moneyPerAutoclick = player.upgrades[0] * player.moneyPerClick;
 		
-		update.count++;
-		update.count2++;
+		update.count += player.timeMult;
+		update.count2 += player.timeMult;
+		player.totalTicks += player.timeMult;
 		
 		player.updateInterval = 1000 * Math.pow(0.98, Math.log(player.buildings[4].owned * player.mult[0] * globalMult[0] + 1));
 		
 		//this fixes minimization by running until the interval tracker is less than 0 if the thing isn't active
-		if(!isActive) update.intervalTracker -= player.updateInterval;
+		if(!isActive) update.intervalTracker -= player.updateInterval * player.timeMult;
 		
 	}while(!isActive && update.intervalTracker > 0 && elapsedTime > player.updateInterval);
 	
@@ -709,8 +763,12 @@ setTimeout(function update(){
 	
 	update.before = new Date();
 	
-	setTimeout(update, player.updateInterval);
-}, player.updateInterval);
+	if(player.updateInterval * player.timeMult < 100) player.timeMult *= 10; //sets up time multiplier if game's ticking too fast
+	
+	setTimeout(update, player.updateInterval * player.timeMult);
+}
+//stuff that happens each tick
+setTimeout(update, player.updateInterval * player.timeMult);
 
 //stuff that happens every ten ticks (i.e. inventory additions)
 function inventoryAdder(){

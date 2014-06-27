@@ -50,13 +50,13 @@ body {
 	height: 325px;
 }*/
 
-#inventoryTable, #row5{
+#inventoryTable, #row5, #row6{
 	margin-left: auto;
 	margin-right: auto;
 	width: 90%;
 }
 
-#row5 {
+#row5, #row6 {
 	margin-top: -2px;
 	padding-top: 0px;
 }

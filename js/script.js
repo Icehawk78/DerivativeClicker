@@ -522,8 +522,6 @@ function versionControl(ifImport){
 		player.versionNum = versionNum;
 	}
 	if(player.versionNum < versionNum || typeof player.versionNum == 'undefined'){
-		var saveText = btoa(JSON.stringify(player));
-		if(!ifImport) alert("New version since you last played. You may want to save your savefile in case there are bugs:\n" + saveText);
 		player.versionNum = versionNum;
 	}
 }

@@ -479,7 +479,6 @@ function updateUpgrades(){
 //this is a function to click the money button: allows auto button clicking
 function moneyButtonClick(amount) {
 	addMoney(player.moneyPerClick * amount);
-	updateMoney();
 	player.clickTracker += amount;
 	player.totalClicks += amount;
 	while(player.clickTracker >= player.clicksToGain){
@@ -491,6 +490,8 @@ function moneyButtonClick(amount) {
 			player.buildings[5*i + 3].owned += Math.round(player.buildings[5*(i+1) + 3].owned*player.mult[i+1]*globalMult[i+1]);
 		}
 	}
+	player.moneyPerAutoclick = player.upgrades[0] * player.moneyPerClick;
+	updateMoney();
 	updateInventory();
 }
 

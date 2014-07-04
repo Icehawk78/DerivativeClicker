@@ -55,13 +55,13 @@ body {
 	height: 325px;
 }*/
 
-#inventoryTable, #row5, #row6{
+#inventoryTable, #row5, #row6, #row7{
 	margin-left: auto;
 	margin-right: auto;
 	width: 90%;
 }
 
-#row5, #row6 {
+#row5, #row6, #row7 {
 	margin-top: -2px;
 	padding-top: 0px;
 }
@@ -94,15 +94,6 @@ body {
 
 #optionTable{
 	margin: auto;
-}
-
-#wipe, #save, #toggleChart, #exportSave, #importSave{
-	margin-left: auto;
-	margin-right: auto;
-	margin-bottom: 100px;
-	text-align: center;
-	font-size: 30px;
-	width: 200px;
 }
 
 #reset {
@@ -212,6 +203,16 @@ body {
 
 .buttonLit:hover {
 	background-color: #ADBAFF;
+}
+
+.option {
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 100px;
+	text-align: center;
+	font-size: 30px;
+	width: 300px;
+	height: 20px;
 }
 
 /* General classes */

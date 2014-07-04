@@ -1,5 +1,8 @@
 Changelog:
 
+Version 0.22 (07/04/2014)
+Added 7th tier, changed reset currency calculation, proper upgrade hiding, improved multiplier calculation, nerfed upgrade multipliers, added alternate number view, changed some names, made some things more efficient, rebalancing.
+
 Version 0.21 (06/27/2014)
 Changed mathematician prestige formula to an explicit formula, bugfixes for version 0.2
 
